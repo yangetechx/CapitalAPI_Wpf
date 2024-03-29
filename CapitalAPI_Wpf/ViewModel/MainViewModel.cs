@@ -16,27 +16,41 @@ namespace CapitalAPI_Wpf.ViewModel
 							 LoginService loginService,
 							 QuoteService quoteService,
 							 StorageService storageService,
-							 AddSymbolCommand addSymbolCommand)
+							 AddSymbolCommand addSymbolCommand,
+							 RemoveSymbolCommand removeSymbolCommand,
+							 LogoutCommand logoutCommand)
 		{
 			_loginViewModel = loginViewModel;
 			_replyViewModel = replyViewModel;
 			_quoteViewModels = quoteViewModels;
 			_addSymbolCommand = addSymbolCommand;
+			_removeSymbolCommand = removeSymbolCommand;
+			_logoutCommand = logoutCommand;
 			loginService.delegateLoginCompleted += LoginCompletedEvent;
 			quoteService.delegateAddSymbol += QuoteService_delegateAddSymbol;
+			quoteService.delegateRemoveSymbol += QuoteService_delegateRemoveSymbol;
 			quoteService.delegateQuote += QuoteService_delegateQuote;
 			Visibility = Visibility.Hidden;
 			BindingOperations.EnableCollectionSynchronization(QuoteViewModels, new object());
 		}
 
+		private void QuoteService_delegateRemoveSymbol(string symbol)
+		{
+			var quote = QuoteViewModels.FirstOrDefault(x => x.Symbol == symbol);
+			QuoteViewModels.Remove(quote);
+		}
+
 		private void QuoteService_delegateQuote(SKCOMLib.SKSTOCKLONG pSKStockLONG)
 		{
 			var symbol = QuoteViewModels.FirstOrDefault(x => x.Symbol == pSKStockLONG.bstrStockNo);
-			symbol.Time = DateTime.Now.ToString("HH:mm:ss.fff");
-			symbol.Volume = pSKStockLONG.nTQty;
-			symbol.BID = pSKStockLONG.nBid * 0.01m;
-			symbol.ASK = pSKStockLONG.nAsk * 0.01m;
-			symbol.LAST = pSKStockLONG.nClose * 0.01m;
+			if (symbol != null)
+			{
+				symbol.Time = DateTime.Now.ToString("HH:mm:ss.fff");
+				symbol.Volume = pSKStockLONG.nTQty;
+				symbol.BID = pSKStockLONG.nBid * 0.01m;
+				symbol.ASK = pSKStockLONG.nAsk * 0.01m;
+				symbol.LAST = pSKStockLONG.nClose * 0.01m;
+			}
 		}
 
 		private void QuoteService_delegateAddSymbol(HashSet<string> uniqueSymbols)
@@ -86,6 +100,20 @@ namespace CapitalAPI_Wpf.ViewModel
 		public ICommand AddSymbolCommand
 		{
 			get { return _addSymbolCommand; }
+		}
+
+		private RemoveSymbolCommand _removeSymbolCommand;
+
+		public ICommand RemoveSymbolCommand
+		{
+			get { return _removeSymbolCommand; }
+		}
+
+		private LogoutCommand _logoutCommand;
+
+		public ICommand LogoutCommand
+		{
+			get { return _logoutCommand; }
 		}
 
 		private void LoginCompletedEvent(bool result)

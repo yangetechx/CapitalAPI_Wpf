@@ -9,6 +9,10 @@ namespace CapitalAPI_Wpf.Service
 
 		public event delegateOnAddSymbolHandler delegateAddSymbol;
 
+		public delegate void delegateOnRemoveSymbolHandler(string symbol);
+
+		public event delegateOnRemoveSymbolHandler delegateRemoveSymbol;
+
 		public delegate void delegateOnQuoteHandler(SKSTOCKLONG pSKStockLONG);
 
 		public event delegateOnQuoteHandler delegateQuote;
@@ -63,7 +67,7 @@ namespace CapitalAPI_Wpf.Service
 
 				code = _sKQuoteLib.SKQuoteLib_GetStockByNoLONG(s.Trim(), ref pSKStockLONG);
 			}
-
+			
 			code = _sKQuoteLib.SKQuoteLib_RequestStocks(ref sPage, string.Join(",", _uniqueSymbols));
 
 			if (code != 0)
@@ -94,6 +98,17 @@ namespace CapitalAPI_Wpf.Service
 			if (!string.IsNullOrEmpty(symbols))
 			{
 				_uniqueSymbols.UnionWith(symbols.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
+			}
+		}
+
+		public void RemoveSymbol(string symbol)
+		{
+			if (_uniqueSymbols.Contains(symbol))
+			{
+				_uniqueSymbols.Remove(symbol);
+				_sKQuoteLib.SKQuoteLib_CancelRequestStocks(symbol);
+				delegateRemoveSymbol?.Invoke(symbol);
+				ConfigUtility.AddOrUpdateAppSetting("Config:SymbolList", string.Join(",", _uniqueSymbols));
 			}
 		}
 	}

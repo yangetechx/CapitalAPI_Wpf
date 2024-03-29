@@ -45,7 +45,9 @@ namespace CapitalAPI_Wpf
 			sc.AddSingleton<StorageService>();
 
 			sc.AddSingleton<LoginCommand>();
-			sc.AddSingleton<AddSymbolCommand>();			
+			sc.AddSingleton<AddSymbolCommand>();
+			sc.AddSingleton<RemoveSymbolCommand>();
+			sc.AddSingleton<LogoutCommand>();
 			sc.AddSingleton<LoginViewModel>();
 			sc.AddSingleton<ReplyViewModel>();
 			sc.AddTransient<ObservableCollection<QuoteViewModel>>();
@@ -63,7 +65,8 @@ namespace CapitalAPI_Wpf
 			return new MainWindow(
 				provider.GetRequiredService<MainViewModel>(),
 				provider.GetRequiredService<LoginService>(),
-				Config
+				Config,
+				provider.GetRequiredService<LogoutCommand>()
 				);
 		}
 	}

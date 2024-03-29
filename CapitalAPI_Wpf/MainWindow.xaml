@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:CapitalAPI_Wpf"
         xmlns:bc="clr-namespace:CapitalAPI_Wpf.BindingConverter"
-        Title="CapitalAPI_Wpf" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="作者Email:furch23@gmail.com 每日:AM08:00自動重啟登入" Height="450" Width="800" Loaded="Window_Loaded">
     <Window.Resources>
         <bc:MultiParameterConverter x:Key="multiParameterConverter" />
         <Style TargetType="Label">
@@ -74,6 +74,8 @@
                     <Label Content="商品代號" />
                     <TextBox x:Name="tb_Symbol" Width="200" />
                     <Button Content="新增商品" Command="{Binding AddSymbolCommand}" CommandParameter="{Binding ElementName=tb_Symbol, Path=Text}" />
+                    <Button Content="刪除商品" Command="{Binding RemoveSymbolCommand}" CommandParameter="{Binding ElementName=tb_Symbol, Path=Text}" />
+                    <Button Content="登出" Command="{Binding LogoutCommand}" CommandParameter="{Binding ElementName=tb_Symbol, Path=Text}" />
                 </StackPanel>
                 <DataGrid Grid.Row="1" x:Name="dg_Quote" AutoGenerateColumns="False"  HorizontalAlignment="Stretch"
                             ItemsSource="{Binding QuoteViewModels}"
